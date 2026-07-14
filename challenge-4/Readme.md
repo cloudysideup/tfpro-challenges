@@ -38,7 +38,7 @@ Subnet ID
 Security Group ID (firewall_id)
 ```
 
-Sample output value has been provided. The formating of your output value should be similar. The values can change
+Sample output value has been provided. The formatting of your output value should be similar. The values can change
 
 ```sh
 running_ec2 = [

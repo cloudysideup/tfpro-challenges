@@ -1,20 +1,20 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.80.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "us-east-1"
-  default_tags {
-    tags = {
-      Environment = var.environement
-    }
-  }
-}
+#terraform {
+#  required_providers {
+#    aws = {
+#      source  = "hashicorp/aws"
+#      version = "5.80.0"
+#    }
+#  }
+#}
+#
+#provider "aws" {
+#  region = "us-east-1"
+#  default_tags {
+#    tags = {
+#      Environment = var.environement
+#    }
+#  }
+#}
 
 # local stack - no data source
 #data "aws_ami" "instance" {
@@ -24,16 +24,7 @@ provider "aws" {
 #  }
 #}
 
-#resource "random_pet" "this" {}
-
-module "random_pet" {
-  source = "./modules/random/"
-}
-
-moved {
-  from = resource.random_pet.this
-  to   = module.random_pet.random_pet.this
-}
+resource "random_pet" "this" {}
 
 #resource "aws_instance" "this" {
 #  # local stack sub for data block
@@ -42,24 +33,7 @@ moved {
 #  instance_type        = "t2.micro"
 #  iam_instance_profile = aws_iam_instance_profile.test_profile.name
 #}
-
-module "aws_instance" {
-  source                   = "./modules/ec2/"
-  aws_instance_ami_name    = var.ami_name
-  aws_instance_iam_profile = module.aws_iam.instance_profile_name
-}
-
-moved {
-  from = aws_instance.this
-  to   = module.aws_instance.aws_instance.this
-}
-
-module "aws_iam" {
-  source                = "./modules/iam/"
-  aws_iam_random_pet_id = module.random_pet.random_pet_id
-  aws_iam_org_name      = var.org-name
-}
-
+#
 #data "aws_iam_policy_document" "assume_role" {
 #  statement {
 #    effect = "Allow"
@@ -108,33 +82,7 @@ module "aws_iam" {
 #  })
 #}
 #
-
-moved {
-  from = aws_iam_role.test_role
-  to   = module.aws_iam.aws_iam_role.test_role
-}
-
-moved {
-  from = aws_iam_instance_profile.test_profile
-  to   = module.aws_iam.aws_iam_instance_profile.test_profile
-}
-
-moved {
-  from = aws_iam_user.lb
-  to   = module.aws_iam.aws_iam_user.lb
-}
-
-moved {
-  from = aws_iam_user_policy.lb_ro
-  to   = module.aws_iam.aws_iam_user_policy.lb_ro
-}
-
-module "aws_s3" {
-  source             = "./modules/s3/"
-  aws_s3_random_id   = module.random_pet.random_pet_id
-  aws_s3_buckets     = var.s3_buckets
-  aws_s3_base_object = var.s3_base_object
-}
+#
 #resource "aws_s3_bucket" "example" {
 #  for_each = var.s3_buckets
 #  bucket   = "${random_pet.this.id}-${each.value}"
@@ -145,21 +93,7 @@ module "aws_s3" {
 #  bucket   = aws_s3_bucket.example[each.key].id
 #  key      = var.s3_base_object
 #}
-
-moved {
-  from = aws_s3_bucket.example
-  to   = module.aws_s3.aws_s3_bucket.example
-}
-
-moved {
-  from = aws_s3_object.object
-  to   = module.aws_s3.aws_s3_object.object
-}
-
-module "aws_sg" {
-  source      = "./modules/sg/"
-  aws_sg_name = var.sg_name
-}
+#
 #resource "aws_security_group" "example" {
 #  name = var.sg_name
 #}
@@ -172,13 +106,3 @@ module "aws_sg" {
 #  ip_protocol = "tcp"
 #  to_port     = 80
 #}
-
-moved {
-  from = aws_security_group.example
-  to   = module.aws_sg.aws_security_group.example
-}
-
-moved {
-  from = aws_vpc_security_group_ingress_rule.example
-  to   = module.aws_sg.aws_vpc_security_group_ingress_rule.example
-}

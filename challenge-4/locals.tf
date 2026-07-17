@@ -2,6 +2,7 @@ locals {
   # get csv into terraform blocks
   ec2_info = csvdecode(file("${path.module}/ec2.csv"))
 
+  # create dictionary
   replacements = {
     "micro" = "t2.micro"
     "nano"  = "t3.nano"

@@ -5,12 +5,12 @@ output "instance_id" {
 
 #Region
 output "ec2_region" {
-  value = aws_instance.this[*].region
+  value = local.servers[*].region
 }
 
 #Team name
 output "ec2_team_name" {
-  value = aws_instance.this[*].tags.name
+  value = aws_instance.this[*].tags.Name
 }
 
 #Instance type
@@ -21,9 +21,9 @@ output "ec2_instance_type" {
 output "aws_instance_info" {
   value = {
     "id"          = aws_instance.this[*].id
-    "region"      = aws_instance.this[*].region
+    "region"      = local.servers[*].region
     "subnet"      = "subnet"
-    "team"        = aws_instance.this[*].tags.name
+    "team"        = aws_instance.this[*].tags.Name
     "type"        = aws_instance.this[*].instance_type
     "firewall_id" = toset([])
   }

@@ -1,32 +1,34 @@
 locals {
-  # get csv into terraform blocks
-  ec2_info = csvdecode(file("${path.module}/ec2.csv"))
-
-  # create dictionary
+  # Step 1 - create dictionary of replacement values
   replacements = {
     "micro" = "t2.micro"
     "nano"  = "t3.nano"
   }
 
-  # replace instance values (better, using a dictionary/map with lookup)
+  # Step 2 - get csv into terraform blocks
+  ec2_info = csvdecode(file("${path.module}/ec2.csv"))
+
+
+  # Step 3 - replace row title with lower()
+  ec2_info_lower = [
+    for row in local.ec2_info : {
+      for k, v in row : lower(k) => v
+    }
+  ]
+
+  # Step 4 - replace instance values 
+  # Merge() is better than replace() here<F6><F6><F6><F6>, using a dictionary/map with lookup)
   ec2_options = [
-    for row in local.ec2_info : merge(row, {
-      # lookup() replaces the value if matched; defaults to original row value if not found
+    for row in local.ec2_info_lower : merge(row, {
+      # lookup() replaces the row.instance_type value if matched; 
+      # defaults to original row.instance_type value if not found
       instance_type = lookup(local.replacements, row.instance_type, row.instance_type)
     })
   ]
 
-  #replace instance values (not ideal but fits scenario and data)
-  # ec2_instance_options = [
-  #  for row in local.ec2_info :
-  #  row.instance_type == "micro" ? merge(row, { instance_type = "t2.micro" }) : merge(row, { instance_type = "t3.nano" })
-  #]
-
-  #us-east-1 servers only
-
+  # Step 5 - replace us-east-1 servers only
   servers = [
     for row in local.ec2_options :
-    row if row.Region == "us-east-1"
+    row if row.region == "us-east-1"
   ]
-
 }

@@ -5,10 +5,24 @@
 #
 #> [!NOTE]
 #> You need to reference to subnet_id by querying data source. No hardcoding.
+data "aws_ami" "ubuntu" {
+  most_recent = true
 
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
 
 resource "aws_instance" "example" {
-  for_each      = data.aws_subnet.subnet_ids.id
+  for_each      = toset(data.aws_subnets.challenge-5-subnets.ids)
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
 

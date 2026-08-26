@@ -1,5 +1,5 @@
 output "vpc_id" {
-  value = resource.aws_vpc.main.id
+  value = module.vpc["challenge-5-vpc"].vpc_id
 }
 
 output "subnet_ids" {

@@ -22,13 +22,12 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "example" {
-  for_each      = toset(data.aws_subnets.challenge-5-subnets.ids)
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
 
-  subnet_id = each.key
+  subnet_id = var.ec2_subnet_id
 
   tags = {
-    Name = "HelloWorld"
+    Name = var.ec2_name
   }
 }
